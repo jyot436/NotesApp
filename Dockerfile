@@ -1,25 +1,26 @@
-# Use OpenJDK 17 as base image
-FROM openjdk:17-jdk-alpine
+# Stage 1: Build
+FROM maven:3.9.2-eclipse-temurin-17 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom files
+# Copy project files
 COPY mvnw .
-COPY pom.xml .
 COPY .mvn .mvn
-
-# Copy source code
+COPY pom.xml .
 COPY src src
 
-# Build the project
+# Make mvnw executable
+RUN chmod +x mvnw
+
+# Build JAR
 RUN ./mvnw clean package -DskipTests
 
-# Copy the built jar
-COPY target/*.jar app.jar
+# Stage 2: Run
+FROM eclipse-temurin:17-jre
+WORKDIR /app
 
-# Expose port
-EXPOSE 8080
+# Copy built JAR
+COPY --from=build /app/target/*.jar app.jar
 
-# Run the jar
+# Run JAR
 ENTRYPOINT ["java", "-jar", "app.jar"]
