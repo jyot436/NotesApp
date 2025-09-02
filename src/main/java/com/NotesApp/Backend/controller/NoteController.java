@@ -15,7 +15,7 @@ import com.NotesApp.Backend.model.Note;
 import com.NotesApp.Backend.service.NoteService;
 
 import java.util.List;
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/notes")
 
